@@ -2,12 +2,15 @@ package at.ddb.teamwork;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -66,6 +69,8 @@ public class Game extends JFrame{
 
     private void  initHomeScreen() throws IOException {
 
+        Game t = this;
+
         /* Background image */
         JLabel bgImageLabel = new JLabel(new ImageIcon(ImageIO.read(new File("assets/home-background.png"))));
         //bgImageLabel.setBounds(MAXIMIZED_BOTH, ABORT, WIDTH, HEIGHT);
@@ -95,7 +100,18 @@ public class Game extends JFrame{
         startButton = new JButton("Spiel starten");
         startButton.setLocation(502, 0);
         startButton.setSize(120, 30);
-        userNamePanel.add(startButton);       
+        userNamePanel.add(startButton); 
+        startButton.addActionListener(new ActionListener() { 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(usernameField.getText().trim().length() == 0) {
+                    JOptionPane.showMessageDialog(t, "Bitte zuerst enen Usernamen eingeben.");   
+                    usernameField.grabFocus();
+                    return;
+                }
+                /* start game */
+            } 
+          } );
 
         // Highscore Panel, ScrollPane and Label
         highscorePanel = new JPanel();
