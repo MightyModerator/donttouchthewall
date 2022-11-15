@@ -1,6 +1,5 @@
 package at.ddb.teamwork;
 
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -15,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import javafx.embed.swing.JFXPanel;
@@ -23,13 +23,11 @@ import javafx.scene.media.MediaPlayer;
 
 import java.io.File;
 import java.io.IOException;
-
-
-
+import java.util.ArrayList;
 import java.awt.BorderLayout;
 import java.awt.Color;
 
-public class Game extends JFrame{
+public class Game extends JFrame {
 
     private JPanel highscorePanel;
     private JScrollPane highscoreScrollPane;
@@ -58,6 +56,9 @@ public class Game extends JFrame{
         highscore.add("Test User", 144);
         highscore.add("John Doe", 163);
 
+        /* damit die applikation endet wenn das fenster geschlossen wird */
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
         try {
             this.initHomeScreen();
             this.playMusic();
@@ -65,6 +66,10 @@ public class Game extends JFrame{
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        //this.usernameField.setText("Mario");
+        //this.levels.get(0).display();
+        //this.setEnabled(false); /* no user interaction with game frame during play */
     }
 
     private void  initHomeScreen() throws IOException {
@@ -110,6 +115,15 @@ public class Game extends JFrame{
                     return;
                 }
                 /* start game */
+                mediaPlayer.stop();
+                Level l;
+                try {
+                    l = t.createLevel(1);
+                    l.display();
+                } catch (Exception e1) {
+                    /* alle levels durch */
+                }
+                ;
             } 
           } );
 
@@ -126,9 +140,27 @@ public class Game extends JFrame{
         this.add(highscoreScrollPane);
 
 
+    }
+
+    private Level createLevel(int levelNumber) throws Exception {
+        Level l = null;
+
+        switch(levelNumber) {
+            case 1:
+                l = new Level(this, 1, "assets/Levels/level1.png", 60);
+                l.addElement(new Obstacle1(100, 100, true, 1));
+                l.addElement(new Obstacle1(1500, 300, false, 2));
+                l.addElement(new Obstacle1(700, 600, true, 3));
+                l.addElement(new Obstacle1(500, 450, false, 2));
+                l.addElement(new Obstacle1(900, 650, true, 3));
+                break;
+        }
+
+        if(l == null) throw new Exception("Level number " + levelNumber + " does not exist");
+
+        return l;
 
 
-            
     }
 
     private void playMusic() {
@@ -140,6 +172,9 @@ public class Game extends JFrame{
         mediaPlayer.setVolume(0.3);
     }
 
+    public String getUserName() {
+        return usernameField.getText().trim();
+    }
 
     
 }

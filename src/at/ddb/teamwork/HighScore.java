@@ -45,9 +45,6 @@ public class HighScore {
             ranking++;
         }
 
-        
-
-
         html += "</table></html>";
         return html;
     }
