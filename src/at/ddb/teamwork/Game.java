@@ -35,6 +35,10 @@ public class Game extends JFrame {
     private JTextField usernameField;
     private JButton startButton;
     private MediaPlayer mediaPlayer;
+    private HighScoreEntry currentHighScoreEntry;
+    private JLabel highscoreLabel;
+    private int levelNumber = 0;
+
 
     public Game() {
         super("Dont't touch the wall");
@@ -44,7 +48,9 @@ public class Game extends JFrame {
         this.setLayout(null);
 
 
-        highscore = new HighScore();
+
+/* 
+        
         highscore.add("User 1", 15);
         highscore.add("XYZ", 28);
         highscore.add("ABC User", 11);
@@ -56,13 +62,17 @@ public class Game extends JFrame {
         highscore.add("Test User", 144);
         highscore.add("John Doe", 163);
 
+ */
         /* damit die applikation endet wenn das fenster geschlossen wird */
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         try {
+            highscore = new HighScore();
+            highscore.load();
+
             this.initHomeScreen();
             this.playMusic();
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -110,20 +120,14 @@ public class Game extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(usernameField.getText().trim().length() == 0) {
-                    JOptionPane.showMessageDialog(t, "Bitte zuerst enen Usernamen eingeben.");   
+                    JOptionPane.showMessageDialog(t, "Bitte zuerst einen Usernamen eingeben.");   
                     usernameField.grabFocus();
                     return;
                 }
                 /* start game */
                 mediaPlayer.stop();
-                Level l;
-                try {
-                    l = t.createLevel(1);
-                    l.display();
-                } catch (Exception e1) {
-                    /* alle levels durch */
-                }
-                ;
+                t.currentHighScoreEntry = t.highscore.add(usernameField.getText().trim(), 0, true);
+                t.nextLevel();
             } 
           } );
 
@@ -131,13 +135,15 @@ public class Game extends JFrame {
         highscorePanel = new JPanel();
         highscorePanel.setLayout(new BorderLayout());
         highscorePanel.setBorder(new EmptyBorder(30, 80, 30, 80));  
-        JLabel hsLabel = new JLabel(highscore.getHtml());
-        hsLabel.setForeground(Color.WHITE);
-        highscorePanel.add(hsLabel, BorderLayout.NORTH);
+        highscoreLabel = new JLabel("");
+        highscoreLabel.setForeground(Color.WHITE);
+        highscorePanel.add(highscoreLabel, BorderLayout.NORTH);
         highscorePanel.setBackground(Color.BLACK);
         highscoreScrollPane = new JScrollPane(highscorePanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         highscoreScrollPane.setBounds(200, 200, 624, 500);
         this.add(highscoreScrollPane);
+
+        this.refreshHighScore();
 
 
     }
@@ -168,12 +174,45 @@ public class Game extends JFrame {
         Media music = new Media(new File("assets/THE_HARA_Fire.mp3").toURI().toString());
         mediaPlayer = new MediaPlayer(music);
         mediaPlayer.setCycleCount(Integer.MAX_VALUE);
-        mediaPlayer.play();
-        mediaPlayer.setVolume(0.3);
+        //mediaPlayer.play();
+        //mediaPlayer.setVolume(0.3);
     }
 
     public String getUserName() {
         return usernameField.getText().trim();
+    }
+
+    public void addPoints(long points) {
+        this.currentHighScoreEntry.addPoints(points);
+    }
+
+    public void nextLevel() {
+        this.levelNumber++;
+        Level l;
+        try {
+            l = this.createLevel(levelNumber);
+            l.display();
+        } catch (Exception e1) {
+            /* alle levels durch */
+            this.gameOver();
+        }
+
+        this.refreshHighScore();
+    }
+
+    public void gameOver() {
+        this.levelNumber = 0;
+        this.refreshHighScore();
+    }
+
+    private void refreshHighScore() {
+        this.highscoreLabel.setText(highscore.getHtml());
+        try {
+            this.highscore.save();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     

@@ -2,7 +2,10 @@ package at.ddb.teamwork;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.PortUnreachableException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +19,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+
+
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -24,9 +29,13 @@ import java.awt.Color;
 import java.awt.Robot;
 import java.awt.Font;
 import java.awt.event.*;
+import java.awt.Image;
 
 
 public class Level extends JFrame {
+
+    private Timer countDownTimer;
+    private long startTimeMillis;
 
     protected final Color startColor = new Color(43,255,0);
     protected final Color trackColor = new Color(255,255,255);
@@ -37,6 +46,7 @@ public class Level extends JFrame {
     protected boolean gameStarted;  
     protected int timeoutSeconds;  
     protected JLabel timerLabel;
+    protected JLabel userNameLabel;
     protected List<GameElement> elements;
     
 
@@ -101,29 +111,21 @@ public class Level extends JFrame {
             e.printStackTrace();
         }
 
-        /* Username and timer panel */
-        JPanel userPanel = new JPanel();
-        userPanel.setLayout(null);
-        userPanel.setLocation(1200, 50);
-        userPanel.setSize(400, 150);
-        userPanel.setBackground(new Color(0,0,0,0)); /* transparent background color */
-        this.add(userPanel);
-
         // Username Label
-        JLabel userNameLabel = new JLabel(this.game.getUserName());
-        userNameLabel.setLocation(0, 0);
+        userNameLabel = new JLabel(this.game.getUserName());
+        userNameLabel.setLocation(1200, 50);
         userNameLabel.setSize(200, 40);
         userNameLabel.setFont(new Font("Verdana", Font.BOLD, 22)); /* font name and size */
         userNameLabel.setForeground(new Color(255,255,255));
-        userPanel.add(userNameLabel);
+        this.add(userNameLabel);
 
         // Timer Label
         timerLabel = new JLabel("");
-        timerLabel.setLocation(0, 40);
+        timerLabel.setLocation(1200, 90);
         timerLabel.setSize(200, 60);
         timerLabel.setFont(new Font("Verdana", Font.BOLD, 36)); /* font name and size */
         timerLabel.setForeground(new Color(255,255,255));
-        userPanel.add(timerLabel);
+        this.add(timerLabel);
 
         // add game elements
         for (GameElement e : elements) {
@@ -151,7 +153,7 @@ public class Level extends JFrame {
                 else if(color.equals(this.goalColor)) {
                     this.finish();
                 } else {
-                    this.gameOver();
+                    this.gameOver(false);
                 }
             }
 
@@ -162,13 +164,29 @@ public class Level extends JFrame {
     }
 
     protected void displayTime() {
+        long  restTimeMillis = this.getRemainingTime();
 
-        Date date = new Date((long)(this.timeoutSeconds*1000));
-        String formattedTime = new SimpleDateFormat("mm:ss:SS").format(date);
-
-        System.out.println(formattedTime);
-
+        /* set game counter text */
+        Date date = new Date(restTimeMillis);
+        String formattedTime = new SimpleDateFormat("mm:ss:SSS").format(date).substring(0, 8);   
         this.timerLabel.setText(formattedTime);
+
+        if(restTimeMillis <= 0) {
+            this.gameOver(true);
+        }
+        
+    }
+
+    protected long getRemainingTime() {
+        long passedTimeSinceStartMillis = 0;
+
+        if(gameStarted) {
+            /* calculate elapsed time */
+            long currentTimeMillis = System.currentTimeMillis();
+            passedTimeSinceStartMillis = currentTimeMillis - startTimeMillis;
+        } 
+
+        return this.timeoutSeconds * 1000 - passedTimeSinceStartMillis;
     }
 
     public void start() {
@@ -185,22 +203,66 @@ public class Level extends JFrame {
 
 
     private void finish() {
+        // tell gamecontroller the received points for this level (i.e. the remaining time in milliseconds)
+        this.game.addPoints(this.getRemainingTime()); 
+        
+
         this.stop();
         System.out.println("Finish!");
+
+        
+
         JOptionPane.showMessageDialog(this, "You did it!!!");
         this.setVisible(false); // hide level frame
         this.dispose(); //Destroy Level, will be created again
+        this.game.nextLevel();
     }
 
-    private void gameOver() {
+    private void gameOver(boolean becauseOfTimeout) {
         this.stop();
         System.out.println("Game Over!");
-        JOptionPane.showMessageDialog(this, "GAME OVER");
+
+        // hide username, timer and game elements
+        this.userNameLabel.setVisible(false);
+        this.timerLabel.setVisible(false);
+        this.userNameLabel.setVisible(false);
+        for (GameElement e : elements) {
+            e.setVisible(false);
+        }  
+
+        /* load game over animation */
+        ImageIcon im = new ImageIcon("assets/burn.gif");
+        Image scaledIm = im.getImage().getScaledInstance(1600, 900, Image.SCALE_DEFAULT);
+        JLabel gameoverLabel = new JLabel(new ImageIcon(scaledIm));
+        gameoverLabel.setBounds(0,0,1600,900);
+        this.add(gameoverLabel);
+
+        if(becauseOfTimeout) {
+            JOptionPane.showMessageDialog(this, "Time is up! GAME OVER", "Oh no!", JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "You hit a wall! GAME OVER", "Oh no!", JOptionPane.ERROR_MESSAGE);
+        }
+        
         this.setVisible(false); // hide level frame
         this.dispose(); //Destroy Level, will be created again
+
+        this.game.gameOver();
     }
 
     private void startCounter() {
+        Level t = this;
+
+        /* recall moment the game counter starts, to later calculate the time difference */
+        startTimeMillis = System.currentTimeMillis();
+
+        countDownTimer = new Timer(80, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                t.displayTime();
+            }
+        });
+
+        countDownTimer.start();
 
     }
 
