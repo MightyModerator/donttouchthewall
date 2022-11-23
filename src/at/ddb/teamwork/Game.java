@@ -1,10 +1,15 @@
 package at.ddb.teamwork;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.print.attribute.standard.Media;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -18,14 +23,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.awt.BorderLayout;
-import java.awt.Color;
 
 public class Game extends JFrame {
 
@@ -177,4 +175,89 @@ public class Game extends JFrame {
     }
 
     
+
+    /**
+     * @return JPanel return the highscorePanel
+     */
+    public JPanel getHighscorePanel() {
+        return highscorePanel;
+    }
+
+    /**
+     * @param highscorePanel the highscorePanel to set
+     */
+    public void setHighscorePanel(JPanel highscorePanel) {
+        this.highscorePanel = highscorePanel;
+    }
+
+    /**
+     * @return JScrollPane return the highscoreScrollPane
+     */
+    public JScrollPane getHighscoreScrollPane() {
+        return highscoreScrollPane;
+    }
+
+    /**
+     * @param highscoreScrollPane the highscoreScrollPane to set
+     */
+    public void setHighscoreScrollPane(JScrollPane highscoreScrollPane) {
+        this.highscoreScrollPane = highscoreScrollPane;
+    }
+
+    /**
+     * @return HighScore return the highscore
+     */
+    public HighScore getHighscore() {
+        return highscore;
+    }
+
+    /**
+     * @param highscore the highscore to set
+     */
+    public void setHighscore(HighScore highscore) {
+        this.highscore = highscore;
+    }
+
+    /**
+     * @return JTextField return the usernameField
+     */
+    public JTextField getUsernameField() {
+        return usernameField;
+    }
+
+    /**
+     * @param usernameField the usernameField to set
+     */
+    public void setUsernameField(JTextField usernameField) {
+        this.usernameField = usernameField;
+    }
+
+    /**
+     * @return JButton return the startButton
+     */
+    public JButton getStartButton() {
+        return startButton;
+    }
+
+    /**
+     * @param startButton the startButton to set
+     */
+    public void setStartButton(JButton startButton) {
+        this.startButton = startButton;
+    }
+
+    /**
+     * @return MediaPlayer return the mediaPlayer
+     */
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+
+    /**
+     * @param mediaPlayer the mediaPlayer to set
+     */
+    public void setMediaPlayer(MediaPlayer mediaPlayer) {
+        this.mediaPlayer = mediaPlayer;
+    }
+
 }
