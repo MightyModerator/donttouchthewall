@@ -126,7 +126,7 @@ public class Game extends JFrame {
                 }
                 /* start game */
                 mediaPlayer.stop();
-                t.currentHighScoreEntry = t.highscore.add(usernameField.getText().trim(), 0, true);
+                t.currentHighScoreEntry = t.highscore.add(usernameField.getText().trim(), 0);
                 t.nextLevel();
             } 
           } );

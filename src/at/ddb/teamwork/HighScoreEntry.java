@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 final class HighScoreEntry implements Comparable , Serializable {
     public final String username;
-    public final boolean hilight;
+    public boolean hilight;
     public long points;
 
     public HighScoreEntry(String username, long points, boolean hilight) {

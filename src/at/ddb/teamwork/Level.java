@@ -30,7 +30,9 @@ import java.awt.Robot;
 import java.awt.Font;
 import java.awt.event.*;
 import java.awt.Image;
-
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.Cursor;
 
 public class Level extends JFrame {
 
@@ -61,7 +63,14 @@ public class Level extends JFrame {
         this.elements = new ArrayList<GameElement>();
 
         this.gameStarted = false;
-        
+
+
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        /*
+        this.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
+            new ImageIcon("assets/cursor.png").getImage(),
+            new Point(0,0),"custom cursor"));
+        */
     }
 
     public void addElement(GameElement e) {
@@ -79,11 +88,15 @@ public class Level extends JFrame {
         this.addMouseMotionListener(new MouseMotionAdapter() {
 
             @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);
+                t.mouseMoved(e);
+            }
+
+            @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
-                int x = e.getX();
-                int y = e.getY();
-                t.mouseMoved(x, y);
+                t.mouseMoved(e);
             }
         });
     }
@@ -134,13 +147,17 @@ public class Level extends JFrame {
         
     }
 
-    private void mouseMoved(int x, int y) {
+    private void mouseMoved(MouseEvent e) {
+
+        int x = e.getX();
+        int y = e.getY();
+
         Robot robot;
         try {
             robot = new Robot();
             Color color = robot.getPixelColor(x, y);
-            //String text = String.format("x: %d, y: %d, color: %s", x, y, color.toString());
-            //System.out.println(text);
+            String text = String.format("x: %d, y: %d, color: %s", x, y, color.toString());
+            System.out.println(text);
 
             if(!this.gameStarted) {
                 if(color.equals(this.startColor)) {
