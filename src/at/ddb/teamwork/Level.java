@@ -1,227 +1,179 @@
 package at.ddb.teamwork;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
 
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.AWTException;
+import javafx.embed.swing.JFXPanel; //Game.java:20: error: package javafx.embed.swing does not exist
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Robot;
-import java.awt.Font;
-import java.awt.event.*;
 
+public class Game extends JFrame {
 
-public class Level extends JFrame {
+    private JPanel highscorePanel;
+    private JScrollPane highscoreScrollPane;
+    private HighScore highscore;
+    private JTextField usernameField;
+    private JButton startButton;
+    private MediaPlayer mediaPlayer;
 
-    protected final Color startColor = new Color(43,255,0);
-    protected final Color trackColor = new Color(255,255,255);
-    protected final Color goalColor = new Color(255,0,21);
+    public Game() {
+        super("Dont't touch the wall");
 
-    protected Game game;
-    protected String imagePath;
-    protected boolean gameStarted;  
-    protected int timeoutSeconds;  
-    protected JLabel timerLabel;
-    protected List<GameElement> elements;
-    
-
-    
-    public Level(Game game, int number, String imagePath, int timeoutSeconds) {
-        super("Level " + number);
-
-        this.game = game;
-        this.imagePath = imagePath;
-        this.timeoutSeconds = timeoutSeconds;
-
-        this.elements = new ArrayList<GameElement>();
-
-        this.gameStarted = false;
-        
-    }
-
-    public void addElement(GameElement e) {
-        this.elements.add(e);
-    }
-
-    public void display() {
-        Level t = this;
-
-        this.initScreen();
-        this.displayTime();
-
-        this.setVisible(true);
-
-        this.addMouseMotionListener(new MouseMotionAdapter() {
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                super.mouseMoved(e);
-                int x = e.getX();
-                int y = e.getY();
-                t.mouseMoved(x, y);
-            }
-        });
-    }
-
-
-    private void  initScreen()  {
+        this.setSize(1024, 768);
 
         this.setLayout(null);
-        this.setSize(1600, 900);
 
-        /* fullscreen */
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 
-        /* withut frame, buttons, ... */
-        this.setUndecorated(true);
+        highscore = new HighScore();
+        highscore.add("User 1", 15);
+        highscore.add("XYZ", 28);
+        highscore.add("ABC User", 11);
+        highscore.add("Test User", 44);
+        highscore.add("John Doe", 63, true);
+        highscore.add("User 1", 115);
+        highscore.add("XYZ", 128);
+        highscore.add("ABC User", 111);
+        highscore.add("Test User", 144);
+        highscore.add("John Doe", 163);
 
-        /* Background image */
-        JLabel bgImageLabel;
+        /* damit die applikation endet wenn das fenster geschlossen wird */
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
         try {
-            bgImageLabel = new JLabel(new ImageIcon(ImageIO.read(new File(this.imagePath))));
-            bgImageLabel.setBounds(0,0,1600,900);
-            this.setContentPane(bgImageLabel);
+            this.initHomeScreen();
+            this.playMusic();
         } catch (IOException e) {
-            // falls Bild nicht geladen werden kann
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
-        /* Username and timer panel */
-        JPanel userPanel = new JPanel();
-        userPanel.setLayout(null);
-        userPanel.setLocation(1200, 50);
-        userPanel.setSize(400, 150);
-        userPanel.setBackground(new Color(0,0,0,0)); /* transparent background color */
-        this.add(userPanel);
+        //this.usernameField.setText("Mario");
+        //this.levels.get(0).display();
+        //this.setEnabled(false); /* no user interaction with game frame during play */
+    }
 
-        // Username Label
-        JLabel userNameLabel = new JLabel(this.game.getUserName());
+    private void  initHomeScreen() throws IOException {
+
+        Game t = this;
+
+        /* Background image */
+        JLabel bgImageLabel = new JLabel(new ImageIcon(ImageIO.read(new File("assets/home-background.png"))));
+        //bgImageLabel.setBounds(MAXIMIZED_BOTH, ABORT, WIDTH, HEIGHT);
+        this.setContentPane(bgImageLabel);
+
+        /* Username and Start Button Panel */
+        JPanel userNamePanel = new JPanel();
+        userNamePanel.setLayout(null);
+        userNamePanel.setLocation(200, 150);
+        userNamePanel.setSize(800, 30);
+        userNamePanel.setBackground(new Color(0,0,0,0)); /* transparent background color */
+        this.add(userNamePanel);
+
+        // Username Textfield + Label
+        usernameField = new JTextField(8);
+        usernameField.setLocation(200, 0);
+        usernameField.setSize(220, 30);
+        userNamePanel.add(usernameField);
+        JLabel userNameLabel = new JLabel("Username");
         userNameLabel.setLocation(0, 0);
-        userNameLabel.setSize(200, 40);
-        userNameLabel.setFont(new Font("Verdana", Font.BOLD, 22)); /* font name and size */
+        userNameLabel.setSize(200, 30);
+        userNameLabel.setFont(new Font("Verdana", Font.BOLD, 18)); /* font name and size */
         userNameLabel.setForeground(new Color(255,255,255));
-        userPanel.add(userNameLabel);
+        userNamePanel.add(userNameLabel);
 
-        // Timer Label
-        timerLabel = new JLabel("");
-        timerLabel.setLocation(0, 40);
-        timerLabel.setSize(200, 60);
-        timerLabel.setFont(new Font("Verdana", Font.BOLD, 36)); /* font name and size */
-        timerLabel.setForeground(new Color(255,255,255));
-        userPanel.add(timerLabel);
-
-        // add game elements
-        for (GameElement e : elements) {
-            this.add(e);
-        }        
-        
-    }
-
-    private void mouseMoved(int x, int y) {
-        Robot robot;
-        try {
-            robot = new Robot();
-            Color color = robot.getPixelColor(x, y);
-            //String text = String.format("x: %d, y: %d, color: %s", x, y, color.toString());
-            //System.out.println(text);
-
-            if(!this.gameStarted) {
-                if(color.equals(this.startColor)) {
-                    this.start();
-                }
-            } else {
-                if(color.equals(this.trackColor) || color.equals(this.startColor)) {
-                    /* do nothing, mouse is on track */
-                }
-                else if(color.equals(this.goalColor)) {
-                    this.finish();
-                } else {
-                    this.gameOver();
-                }
-            }
-
-
-        } catch (AWTException e1) {
-            e1.printStackTrace();
-        }
-    }
-
-    protected void displayTime() {
-
-        Date date = new Date((long)(this.timeoutSeconds*1000));
-        String formattedTime = new SimpleDateFormat("mm:ss:SS").format(date);
-
-        System.out.println(formattedTime);
-
-        this.timerLabel.setText(formattedTime);
-    }
-
-    public void start() {
-        this.gameStarted = true;
-        System.out.println("Game started.");
-        this.startCounter();
-        this.startGameElements();
-    }
-
-    public void stop() {
-        this.gameStarted = false;
-        this.stopGameElements();
-    }
-
-
-    private void finish() {
-        this.stop();
-        System.out.println("Finish!");
-        JOptionPane.showMessageDialog(this, "You did it!!!");
-        this.setVisible(false); // hide level frame
-        this.dispose(); //Destroy Level, will be created again
-    }
-
-    private void gameOver() {
-        this.stop();
-        System.out.println("Game Over!");
-        JOptionPane.showMessageDialog(this, "GAME OVER");
-        this.setVisible(false); // hide level frame
-        this.dispose(); //Destroy Level, will be created again
-    }
-
-    private void startCounter() {
-
-    }
-
-    Timer gameElementsTimer;
-    private void startGameElements() {
-        gameElementsTimer = new Timer(40, new ActionListener() {
-
+        // Start Button
+        startButton = new JButton("Spiel starten");
+        startButton.setLocation(502, 0);
+        startButton.setSize(120, 30);
+        userNamePanel.add(startButton); 
+        startButton.addActionListener(new ActionListener() { 
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (GameElement el : elements) {
-                    el.draw();
-                }   
-            }}
-        
-        );
+                if(usernameField.getText().trim().length() == 0) {
+                    JOptionPane.showMessageDialog(t, "Bitte zuerst enen Usernamen eingeben.");   
+                    usernameField.grabFocus();
+                    return;
+                }
+                /* start game */
+                mediaPlayer.stop();
+                Level l;
+                try {
+                    l = t.createLevel(1);
+                    l.display();
+                } catch (Exception e1) {
+                    /* alle levels durch */
+                }
+                ;
+            } 
+          } );
 
-        gameElementsTimer.start();
+        // Highscore Panel, ScrollPane and Label
+        highscorePanel = new JPanel();
+        highscorePanel.setLayout(new BorderLayout());
+        highscorePanel.setBorder(new EmptyBorder(30, 80, 30, 80));  
+        JLabel hsLabel = new JLabel(highscore.getHtml());
+        hsLabel.setForeground(Color.WHITE);
+        highscorePanel.add(hsLabel, BorderLayout.NORTH);
+        highscorePanel.setBackground(Color.BLACK);
+        highscoreScrollPane = new JScrollPane(highscorePanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        highscoreScrollPane.setBounds(200, 200, 624, 500);
+        this.add(highscoreScrollPane);
+
+
     }
 
-    private void stopGameElements() {
-        this.gameElementsTimer.stop();
+    private Level createLevel(int levelNumber) throws Exception {
+        Level l = null;
+
+        switch(levelNumber) {
+            case 1:
+                l = new Level(this, 1, "assets/Levels/level1.png", 60);
+                l.addElement(new Obstacle1(100, 100, true, 1));
+                l.addElement(new Obstacle1(1500, 300, false, 2));
+                l.addElement(new Obstacle1(700, 600, true, 3));
+                l.addElement(new Obstacle1(500, 450, false, 2));
+                l.addElement(new Obstacle1(900, 650, true, 3));
+                break;
+        }
+
+        if(l == null) throw new Exception("Level number " + levelNumber + " does not exist");
+
+        return l;
+
+
+    }
+
+    private void playMusic() {
+        final JFXPanel fxPanel = new JFXPanel();
+        Media music = new Media(new File("assets/THE_HARA_Fire.mp3").toURI().toString());
+        mediaPlayer = new MediaPlayer(music);
+        mediaPlayer.setCycleCount(Integer.MAX_VALUE);
+        mediaPlayer.play();
+        mediaPlayer.setVolume(0.3);
+    }
+
+    public String getUserName() {
+        return usernameField.getText().trim();
     }
 
     
