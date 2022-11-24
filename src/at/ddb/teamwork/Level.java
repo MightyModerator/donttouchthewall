@@ -30,7 +30,9 @@ import java.awt.Robot;
 import java.awt.Font;
 import java.awt.event.*;
 import java.awt.Image;
-
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.Cursor;
 
 public class Level extends JFrame {
 
@@ -61,7 +63,14 @@ public class Level extends JFrame {
         this.elements = new ArrayList<GameElement>();
 
         this.gameStarted = false;
-        
+
+
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        /*
+        this.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
+            new ImageIcon("assets/cursor.png").getImage(),
+            new Point(0,0),"custom cursor"));
+        */
     }
 
     public void addElement(GameElement e) {
@@ -79,11 +88,15 @@ public class Level extends JFrame {
         this.addMouseMotionListener(new MouseMotionAdapter() {
 
             @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);
+                t.mouseMoved(e);
+            }
+
+            @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
-                int x = e.getX();
-                int y = e.getY();
-                t.mouseMoved(x, y);
+                t.mouseMoved(e);
             }
         });
     }
@@ -134,13 +147,17 @@ public class Level extends JFrame {
         
     }
 
-    private void mouseMoved(int x, int y) {
+    private void mouseMoved(MouseEvent e) {
+
+        int x = e.getX();
+        int y = e.getY();
+
         Robot robot;
         try {
             robot = new Robot();
             Color color = robot.getPixelColor(x, y);
-            //String text = String.format("x: %d, y: %d, color: %s", x, y, color.toString());
-            //System.out.println(text);
+            String text = String.format("x: %d, y: %d, color: %s", x, y, color.toString());
+            System.out.println(text);
 
             if(!this.gameStarted) {
                 if(color.equals(this.startColor)) {
@@ -164,8 +181,21 @@ public class Level extends JFrame {
     }
 
     protected void displayTime() {
+        long  restTimeMillis = this.getRemainingTime();
 
-        float passedTimeSinceStartMillis = 0;
+        /* set game counter text */
+        Date date = new Date(restTimeMillis);
+        String formattedTime = new SimpleDateFormat("mm:ss:SSS").format(date).substring(0, 8);   
+        this.timerLabel.setText(formattedTime);
+
+        if(restTimeMillis <= 0) {
+            this.gameOver(true);
+        }
+        
+    }
+
+    protected long getRemainingTime() {
+        long passedTimeSinceStartMillis = 0;
 
         if(gameStarted) {
             /* calculate elapsed time */
@@ -173,15 +203,7 @@ public class Level extends JFrame {
             passedTimeSinceStartMillis = currentTimeMillis - startTimeMillis;
         } 
 
-        /* set game counter text */
-        Date date = new Date((long) (this.timeoutSeconds * 1000 - passedTimeSinceStartMillis));
-        String formattedTime = new SimpleDateFormat("mm:ss:SSS").format(date).substring(0, 8);   
-        this.timerLabel.setText(formattedTime);
-
-        if(passedTimeSinceStartMillis >= timeoutSeconds * 1000) {
-            this.gameOver(true);
-        }
-        
+        return this.timeoutSeconds * 1000 - passedTimeSinceStartMillis;
     }
 
     public void start() {
@@ -198,11 +220,19 @@ public class Level extends JFrame {
 
 
     private void finish() {
+        // tell gamecontroller the received points for this level (i.e. the remaining time in milliseconds)
+        this.game.addPoints(this.getRemainingTime()); 
+        
+
         this.stop();
         System.out.println("Finish!");
+
+        
+
         JOptionPane.showMessageDialog(this, "You did it!!!");
         this.setVisible(false); // hide level frame
         this.dispose(); //Destroy Level, will be created again
+        this.game.nextLevel();
     }
 
     private void gameOver(boolean becauseOfTimeout) {
@@ -232,6 +262,8 @@ public class Level extends JFrame {
         
         this.setVisible(false); // hide level frame
         this.dispose(); //Destroy Level, will be created again
+
+        this.game.gameOver();
     }
 
     private void startCounter() {
