@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.print.attribute.standard.Media;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,6 +22,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import javafx.embed.swing.JFXPanel;
+import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 public class Game extends JFrame {
