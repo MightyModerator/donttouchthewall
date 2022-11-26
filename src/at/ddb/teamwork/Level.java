@@ -266,6 +266,9 @@ public class Level extends JFrame {
         this.game.gameOver();
     }
 
+    /**
+     * Starts the Timeout Counter of the Level
+     */
     private void startCounter() {
         Level t = this;
 

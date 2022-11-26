@@ -14,14 +14,20 @@ public class HighScore implements Serializable {
 
     private ArrayList<HighScoreEntry> entries = new ArrayList<HighScoreEntry>();
 
-    public HighScoreEntry add(String username, int time) {
+    /**
+     * Adds an new entry to the highscore
+     * @param username the users name for the highscore
+     * @param score the users highscore
+     * @return returns a new 
+     */
+    public HighScoreEntry add(String username, int score) {
         
         /* only the newest entry should be hilighted, so remove hilight from all other entries */
         for (HighScoreEntry entry : this.entries) {
             entry.hilight = false;
         }
 
-        HighScoreEntry e = new HighScoreEntry(username, time, true);
+        HighScoreEntry e = new HighScoreEntry(username, score, true);
         this.entries.add(e);
         return e;
     }

@@ -14,7 +14,7 @@ final class HighScoreEntry implements Comparable , Serializable {
     }
 
     public void addPoints(long toAdd) {
-        this.points += toAdd;
+        this.points = this.points + toAdd;
     }
 
     @Override

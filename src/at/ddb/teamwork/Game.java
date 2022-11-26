@@ -147,22 +147,26 @@ public class Game extends JFrame {
     }
 
     private Level createLevel(int levelNumber) throws Exception {
-        Level l = null;
+        Level lv = null;
 
         switch(levelNumber) {
             case 1:
-                l = new Level(this, 1, "assets/Levels/level1.png", 60);
-                l.addElement(new Obstacle1(100, 100, true, 1));
-                l.addElement(new Obstacle1(1500, 300, false, 2));
-                l.addElement(new Obstacle1(700, 600, true, 3));
-                l.addElement(new Obstacle1(500, 450, false, 2));
-                l.addElement(new Obstacle1(900, 650, true, 3));
+                lv = new Level(this, 1, "assets/Levels/level1.png", 60);
+                lv.addElement(new Obstacle1(100, 100, true, 1));
+                lv.addElement(new Obstacle1(1500, 300, false, 2));
+                lv.addElement(new Obstacle1(700, 600, true, 3));
+                lv.addElement(new Obstacle1(500, 450, false, 2));
+                lv.addElement(new Obstacle1(900, 650, true, 3));
+                lv.addElement(new Obstacle2(800, 450, 38, 52));
+                break;
+            case 2:
+                System.out.println("Level 2 wird starten.");
                 break;
         }
 
-        if(l == null) throw new Exception("Level number " + levelNumber + " does not exist");
+        if(lv == null) throw new Exception("Level number " + levelNumber + " does not exist");
 
-        return l;
+        return lv;
 
 
     }
