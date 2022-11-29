@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -14,14 +15,21 @@ public class HighScore implements Serializable {
 
     private ArrayList<HighScoreEntry> entries = new ArrayList<HighScoreEntry>();
 
-    public HighScoreEntry add(String username, int time) {
+    /**
+     * Adds an new entry to the highscore
+     * @param username the users name for the highscore
+     * @param score the users highscore
+     * @return returns a new 
+     */
+    public HighScoreEntry add(String username, int score) {
         
         /* only the newest entry should be hilighted, so remove hilight from all other entries */
         for (HighScoreEntry entry : this.entries) {
             entry.hilight = false;
         }
 
-        HighScoreEntry e = new HighScoreEntry(username, time, true);
+        /* add new entry to arraylist */
+        HighScoreEntry e = new HighScoreEntry(username, score, true);
         this.entries.add(e);
         return e;
     }
@@ -46,21 +54,21 @@ public class HighScore implements Serializable {
 
     public void save() throws IOException {
         FileOutputStream fileStream = new FileOutputStream("highscore");
+
+        /* Serialize highscore from ArrayList */
         ObjectOutputStream os = new ObjectOutputStream(fileStream);
         os.writeObject(this.entries);
+
+        /* close file output stream */
+        fileStream.close();
         os.close();
         
     }
 
-    public void load() throws ClassNotFoundException {
-        try {
-            FileInputStream fileStream = new FileInputStream("highscore");
-            ObjectInputStream is = new ObjectInputStream(fileStream);
-            this.entries = (ArrayList<HighScoreEntry>) is.readObject();
-        } catch(IOException ioex) {
-            /* not created yet */
-        }
-
+    public void load() throws ClassNotFoundException, IOException {
+        FileInputStream fileStream = new FileInputStream("highscore");
+        ObjectInputStream is = new ObjectInputStream(fileStream);
+        this.entries = (ArrayList<HighScoreEntry>) is.readObject();
 
     }
 }

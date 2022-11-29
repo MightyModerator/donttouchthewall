@@ -64,13 +64,9 @@ public class Level extends JFrame {
 
         this.gameStarted = false;
 
-
+        /* set mouse cursor to CROSSHAIR */
         this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-        /*
-        this.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
-            new ImageIcon("assets/cursor.png").getImage(),
-            new Point(0,0),"custom cursor"));
-        */
+
     }
 
     public void addElement(GameElement e) {
@@ -83,6 +79,7 @@ public class Level extends JFrame {
         this.initScreen();
         this.displayTime();
 
+        /* make jframe visible */
         this.setVisible(true);
 
         this.addMouseMotionListener(new MouseMotionAdapter() {
@@ -101,17 +98,28 @@ public class Level extends JFrame {
         });
     }
 
+    public void start() {
+        this.gameStarted = true;
+        System.out.println("Game started.");
+        this.startCounter();
+        this.startGameElements();
+    }
 
-    private void  initScreen()  {
+    public void stop() {
+        this.gameStarted = false;
+        this.stopGameElements();
+    }
+
+    protected void  initScreen()  {
 
         this.setLayout(null);
         this.setSize(1600, 900);
 
         /* fullscreen */
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        //this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 
-        /* withut frame, buttons, ... */
-        this.setUndecorated(true);
+        /* without frame, buttons, ... */
+        //this.setUndecorated(true);
 
         /* Background image */
         JLabel bgImageLabel;
@@ -159,7 +167,7 @@ public class Level extends JFrame {
             String text = String.format("x: %d, y: %d, color: %s", x, y, color.toString());
             System.out.println(text);
 
-            if(!this.gameStarted) {
+            if(this.gameStarted == false) {
                 if(color.equals(this.startColor)) {
                     this.start();
                 }
@@ -180,7 +188,7 @@ public class Level extends JFrame {
         }
     }
 
-    protected void displayTime() {
+    private void displayTime() {
         long  restTimeMillis = this.getRemainingTime();
 
         /* set game counter text */
@@ -194,7 +202,7 @@ public class Level extends JFrame {
         
     }
 
-    protected long getRemainingTime() {
+    private long getRemainingTime() {
         long passedTimeSinceStartMillis = 0;
 
         if(gameStarted) {
@@ -206,17 +214,7 @@ public class Level extends JFrame {
         return this.timeoutSeconds * 1000 - passedTimeSinceStartMillis;
     }
 
-    public void start() {
-        this.gameStarted = true;
-        System.out.println("Game started.");
-        this.startCounter();
-        this.startGameElements();
-    }
 
-    public void stop() {
-        this.gameStarted = false;
-        this.stopGameElements();
-    }
 
 
     private void finish() {
@@ -230,6 +228,7 @@ public class Level extends JFrame {
         
 
         JOptionPane.showMessageDialog(this, "You did it!!!");
+
         this.setVisible(false); // hide level frame
         this.dispose(); //Destroy Level, will be created again
         this.game.nextLevel();
@@ -237,12 +236,14 @@ public class Level extends JFrame {
 
     private void gameOver(boolean becauseOfTimeout) {
         this.stop();
+        this.game.getAudioController().playGameOver();
         System.out.println("Game Over!");
 
         // hide username, timer and game elements
         this.userNameLabel.setVisible(false);
         this.timerLabel.setVisible(false);
-        this.userNameLabel.setVisible(false);
+
+        /* hide all obstacles by iterating */
         for (GameElement e : elements) {
             e.setVisible(false);
         }  
@@ -266,6 +267,9 @@ public class Level extends JFrame {
         this.game.gameOver();
     }
 
+    /**
+     * Starts the Timeout Counter of the Level
+     */
     private void startCounter() {
         Level t = this;
 
@@ -279,6 +283,7 @@ public class Level extends JFrame {
             }
         });
 
+        /* starts the timer, and thus the countdown of the level */
         countDownTimer.start();
 
     }

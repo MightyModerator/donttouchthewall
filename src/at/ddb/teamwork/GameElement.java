@@ -41,10 +41,5 @@ public abstract class GameElement extends JLabel {
     
     public abstract void draw();
 
-    public abstract boolean hitTest(int x, int y);
-
-
-
-
     
 }

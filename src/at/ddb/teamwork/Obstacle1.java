@@ -36,11 +36,5 @@ public class Obstacle1 extends GameElement {
         this.setLocation(p);
         
     }
-
-    @Override
-    public boolean hitTest(int x, int y) {
-        // TODO Auto-generated method stub
-        return false;
-    }
     
 }

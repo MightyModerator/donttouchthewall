@@ -9,6 +9,13 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -32,10 +39,10 @@ public class Game extends JFrame {
     private HighScore highscore;
     private JTextField usernameField;
     private JButton startButton;
-    private MediaPlayer mediaPlayer;
     private HighScoreEntry currentHighScoreEntry;
     private JLabel highscoreLabel;
     private int levelNumber = 0;
+    private AudioController audioController;
 
 
     public Game() {
@@ -65,11 +72,14 @@ public class Game extends JFrame {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         try {
+            audioController = new AudioController();
             highscore = new HighScore();
             highscore.load();
 
             this.initHomeScreen();
-            this.playMusic();
+
+            this.audioController.playMusic("assets/THE_HARA_Fire.mp3");
+
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -123,7 +133,7 @@ public class Game extends JFrame {
                     return;
                 }
                 /* start game */
-                mediaPlayer.stop();
+                t.audioController.stopMusic();
                 t.currentHighScoreEntry = t.highscore.add(usernameField.getText().trim(), 0);
                 t.nextLevel();
             } 
@@ -146,38 +156,44 @@ public class Game extends JFrame {
 
     }
 
+    /**
+     * 
+     * @param levelNumber
+     * @return
+     * @throws Exception
+     */
     private Level createLevel(int levelNumber) throws Exception {
-        Level l = null;
+        Level lv = null;
 
         switch(levelNumber) {
             case 1:
-                l = new Level(this, 1, "assets/Levels/level1.png", 60);
-                l.addElement(new Obstacle1(100, 100, true, 1));
-                l.addElement(new Obstacle1(1500, 300, false, 2));
-                l.addElement(new Obstacle1(700, 600, true, 3));
-                l.addElement(new Obstacle1(500, 450, false, 2));
-                l.addElement(new Obstacle1(900, 650, true, 3));
+                lv = new Level(this, 1, "assets/Levels/level1.png", 60);
+                lv.addElement(new Obstacle1(100, 100, true, 1));
+                lv.addElement(new Obstacle1(1500, 300, false, 2));
+                lv.addElement(new Obstacle1(700, 600, true, 3));
+                lv.addElement(new Obstacle1(500, 450, false, 2));
+                lv.addElement(new Obstacle1(900, 650, true, 3));
+                lv.addElement(new Obstacle2(800, 450, 38, 52));
+                break;
+            case 2:
+                System.out.println("Level 2 wird starten.");
                 break;
         }
 
-        if(l == null) throw new Exception("Level number " + levelNumber + " does not exist");
+        if(lv == null) throw new Exception("Level number " + levelNumber + " does not exist");
 
-        return l;
+        return lv;
 
 
     }
 
-    private void playMusic() {
-        final JFXPanel fxPanel = new JFXPanel();
-        Media music = new Media(new File("assets/THE_HARA_Fire.mp3").toURI().toString());
-        mediaPlayer = new MediaPlayer(music);
-        mediaPlayer.setCycleCount(Integer.MAX_VALUE);
-        //mediaPlayer.play();
-        //mediaPlayer.setVolume(0.3);
-    }
 
     public String getUserName() {
         return usernameField.getText().trim();
+    }
+
+    public AudioController getAudioController() {
+        return this.audioController;
     }
 
     public void addPoints(long points) {
@@ -211,92 +227,6 @@ public class Game extends JFrame {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-    }
-
-    
-
-    /**
-     * @return JPanel return the highscorePanel
-     */
-    public JPanel getHighscorePanel() {
-        return highscorePanel;
-    }
-
-    /**
-     * @param highscorePanel the highscorePanel to set
-     */
-    public void setHighscorePanel(JPanel highscorePanel) {
-        this.highscorePanel = highscorePanel;
-    }
-
-    /**
-     * @return JScrollPane return the highscoreScrollPane
-     */
-    public JScrollPane getHighscoreScrollPane() {
-        return highscoreScrollPane;
-    }
-
-    /**
-     * @param highscoreScrollPane the highscoreScrollPane to set
-     */
-    public void setHighscoreScrollPane(JScrollPane highscoreScrollPane) {
-        this.highscoreScrollPane = highscoreScrollPane;
-    }
-
-    /**
-     * @return HighScore return the highscore
-     */
-    public HighScore getHighscore() {
-        return highscore;
-    }
-
-    /**
-     * @param highscore the highscore to set
-     */
-    public void setHighscore(HighScore highscore) {
-        this.highscore = highscore;
-    }
-
-    /**
-     * @return JTextField return the usernameField
-     */
-    public JTextField getUsernameField() {
-        return usernameField;
-    }
-
-    /**
-     * @param usernameField the usernameField to set
-     */
-    public void setUsernameField(JTextField usernameField) {
-        this.usernameField = usernameField;
-    }
-
-    /**
-     * @return JButton return the startButton
-     */
-    public JButton getStartButton() {
-        return startButton;
-    }
-
-    /**
-     * @param startButton the startButton to set
-     */
-    public void setStartButton(JButton startButton) {
-        this.startButton = startButton;
-    }
-
-    /**
-     * @return MediaPlayer return the mediaPlayer
-     */
-    public MediaPlayer getMediaPlayer() {
-        return mediaPlayer;
-    }
-
-    /**
-     * @param mediaPlayer the mediaPlayer to set
-     */
-    public void setMediaPlayer(MediaPlayer mediaPlayer) {
-        this.mediaPlayer = mediaPlayer;
-    }
+    }   
 
 }
