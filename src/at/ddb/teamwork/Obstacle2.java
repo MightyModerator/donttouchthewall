@@ -38,7 +38,8 @@ public class Obstacle2 extends GameElement {
 
     @Override
     public void draw() {
-        /* nothing, this gamelement does not move */
+        // TODO Auto-generated method stub
+        
     }
     
 }
