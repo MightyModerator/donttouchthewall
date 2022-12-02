@@ -2,10 +2,7 @@ package at.ddb.teamwork;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.PortUnreachableException;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +13,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.Timer;
 
 
@@ -30,8 +26,6 @@ import java.awt.Robot;
 import java.awt.Font;
 import java.awt.event.*;
 import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.Cursor;
 
 public class Level extends JFrame {
@@ -56,12 +50,13 @@ public class Level extends JFrame {
     public Level(Game game, int number, String imagePath, int timeoutSeconds) {
         super("Level " + number);
 
+        Game.logger.info("Initializing level " + number); 
+
         this.game = game;
         this.imagePath = imagePath;
         this.timeoutSeconds = timeoutSeconds;
 
         this.elements = new ArrayList<GameElement>();
-
         this.gameStarted = false;
 
         /* set mouse cursor to CROSSHAIR */
@@ -73,8 +68,14 @@ public class Level extends JFrame {
         this.elements.add(e);
     }
 
-    public void display() {
+    /**
+     * 
+     * @throws IOException when background image cannot be loaded
+     */
+    public void display() throws IOException {
         Level t = this;
+
+        Game.logger.info("Display level "); 
 
         this.initScreen();
         this.displayTime();
@@ -82,14 +83,24 @@ public class Level extends JFrame {
         /* make jframe visible */
         this.setVisible(true);
 
+
+        /* start listening to mouse events */
         this.addMouseMotionListener(new MouseMotionAdapter() {
 
+            /**
+             * Invoked when a mouse button is pressed on a component and then
+             * dragged. 
+             */
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
                 t.mouseMoved(e);
             }
 
+            /**
+             * Invoked when the mouse button has been moved on a component
+             * (with no buttons no down).
+             */
             @Override
             public void mouseMoved(MouseEvent e) {
                 super.mouseMoved(e);
@@ -100,37 +111,36 @@ public class Level extends JFrame {
 
     public void start() {
         this.gameStarted = true;
-        System.out.println("Game started.");
         this.startCounter();
         this.startGameElements();
+
+        Game.logger.info("Game started"); 
     }
 
     public void stop() {
         this.gameStarted = false;
         this.stopGameElements();
+
+        Game.logger.info("Game stopped"); 
     }
 
-    protected void  initScreen()  {
+    protected void  initScreen() throws IOException  {
 
         this.setLayout(null);
         this.setSize(1600, 900);
 
         /* fullscreen */
-        //this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 
         /* without frame, buttons, ... */
-        //this.setUndecorated(true);
+        this.setUndecorated(true);
 
         /* Background image */
         JLabel bgImageLabel;
-        try {
-            bgImageLabel = new JLabel(new ImageIcon(ImageIO.read(new File(this.imagePath))));
-            bgImageLabel.setBounds(0,0,1600,900);
-            this.setContentPane(bgImageLabel);
-        } catch (IOException e) {
-            // falls Bild nicht geladen werden kann
-            e.printStackTrace();
-        }
+        bgImageLabel = new JLabel(new ImageIcon(ImageIO.read(new File(this.imagePath))));
+        bgImageLabel.setBounds(0,0,1600,900);
+        this.setContentPane(bgImageLabel);
+
 
         // Username Label
         userNameLabel = new JLabel(this.game.getUserName());
@@ -151,7 +161,9 @@ public class Level extends JFrame {
         // add game elements
         for (GameElement e : elements) {
             this.add(e);
-        }        
+        }  
+        
+        Game.logger.info("Level Screen initialized"); 
         
     }
 
@@ -184,7 +196,9 @@ public class Level extends JFrame {
 
 
         } catch (AWTException e1) {
-            e1.printStackTrace();
+            Game.logger.error("Platform does not allow low level input control", e); 
+            JOptionPane.showMessageDialog(this, "Platform does not allow low level input control. Exit game.");
+            System.exit(2);
         }
     }
 

@@ -13,10 +13,21 @@ final class HighScoreEntry implements Comparable , Serializable {
         this.hilight = hilight;
     }
 
+    
+    /** 
+     * 
+     * @param toAdd
+     */
     public void addPoints(long toAdd) {
         this.points = this.points + toAdd;
     }
 
+    
+    /** 
+     * 
+     * @param o
+     * @return int
+     */
     @Override
     public int compareTo(Object o) {
         if(((HighScoreEntry)o).points > this.points) {

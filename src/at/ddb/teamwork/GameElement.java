@@ -1,14 +1,13 @@
 package at.ddb.teamwork;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import java.awt.Image;
 
+/**
+ * To create a new Obstacle or other sprite for the game, extend his Class.
+ */
 public abstract class GameElement extends JLabel {
 
     private int width;
@@ -22,23 +21,28 @@ public abstract class GameElement extends JLabel {
 
         this.setImage(imagePath);
 
-
         this.setLocation(x, y);
         this.setSize(width, height);
         this.setLayout(null);
-        
-
-        
     }
 
+
+    
+    /** 
+     * Initialize and paint the game elements image or animated gif form a given image file.
+     * @param imagePath The image filepath to load
+     */
     public void setImage(String imagePath) {
         ImageIcon im = new ImageIcon(imagePath);
         Image scaledIm = im.getImage().getScaledInstance(this.width, this.height, Image.SCALE_DEFAULT);
         this.setIcon(new ImageIcon(scaledIm));
         this.repaint();
-        
     }
     
+    /**
+     * This method is called 25 times per second during game play.
+     * It can be used for animation of the game element.
+     */
     public abstract void draw();
 
     

@@ -9,13 +9,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,10 +20,10 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
+import javax.xml.catalog.Catalog;
 
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Game extends JFrame {
 
@@ -44,52 +37,50 @@ public class Game extends JFrame {
     private int levelNumber = 0;
     private AudioController audioController;
 
+    public final static Logger logger = LogManager.getLogger(Game.class);
 
     public Game() {
         super("Dont't touch the wall");
 
+        /* size of the startscreen in pixels */
         this.setSize(1024, 768);
 
+        /* no layout manager necessary, we work with absolute coordinates. */
         this.setLayout(null);
 
-
-
-/* 
-        
-        highscore.add("User 1", 15);
-        highscore.add("XYZ", 28);
-        highscore.add("ABC User", 11);
-        highscore.add("Test User", 44);
-        highscore.add("John Doe", 63, true);
-        highscore.add("User 1", 115);
-        highscore.add("XYZ", 128);
-        highscore.add("ABC User", 111);
-        highscore.add("Test User", 144);
-        highscore.add("John Doe", 163);
-
- */
         /* damit die applikation endet wenn das fenster geschlossen wird */
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        logger.debug("Program started");  
+        
         try {
+            /* initialisation of the audioController. with this background music and sound clips can be played */
             audioController = new AudioController();
+
+            /* initialisation of the highscore */
             highscore = new HighScore();
+
+            /* load highscore from disk */
             highscore.load();
 
+            /* initialisation of frame with all visual elements */
             this.initHomeScreen();
 
+            /* play background music */
             this.audioController.playMusic("assets/THE_HARA_Fire.mp3");
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Game.logger.error("Unable to start game.", e); 
+            JOptionPane.showMessageDialog(this, "Unable to start game." + e.getMessage());
+            System.exit(ABORT);
         }
 
-        //this.usernameField.setText("Mario");
-        //this.levels.get(0).display();
-        //this.setEnabled(false); /* no user interaction with game frame during play */
     }
 
+    /**
+     * All visual elements of the Game frame are created and defined here.
+     * @throws IOException Thrown when the background image can not be loaded from disk.
+     */
     private void  initHomeScreen() throws IOException {
 
         Game t = this;
@@ -127,6 +118,7 @@ public class Game extends JFrame {
         startButton.addActionListener(new ActionListener() { 
             @Override
             public void actionPerformed(ActionEvent e) {
+                /* this is executed when start button is clicked */
                 if(usernameField.getText().trim().length() == 0) {
                     JOptionPane.showMessageDialog(t, "Bitte zuerst einen Usernamen eingeben.");   
                     usernameField.grabFocus();
@@ -137,7 +129,7 @@ public class Game extends JFrame {
                 t.currentHighScoreEntry = t.highscore.add(usernameField.getText().trim(), 0);
                 t.nextLevel();
             } 
-          } );
+        });
 
         // Highscore Panel, ScrollPane and Label
         highscorePanel = new JPanel();
@@ -153,13 +145,16 @@ public class Game extends JFrame {
 
         this.refreshHighScore();
 
+        Game.logger.info("Home screen initialized"); 
 
     }
 
     /**
-     * 
-     * @param levelNumber
-     * @return
+     * Here the diffent levels get created and defined. This mehtod is called
+     * for each level using the levelnumber, the level with the number is then 
+     * created and returned. 
+     * @param levelNumber the level number that shall be created
+     * @return the created level
      * @throws Exception
      */
     private Level createLevel(int levelNumber) throws Exception {
@@ -187,45 +182,76 @@ public class Game extends JFrame {
 
     }
 
-
+    /**
+     * returns the players name 
+     * @return username
+     */
     public String getUserName() {
         return usernameField.getText().trim();
     }
 
+    /**
+     * returns the audio controller. This may be called from insed the levels or the gameelements.
+     * @return 
+     */
     public AudioController getAudioController() {
         return this.audioController;
     }
 
+    /**
+     * Add highscore points to current user. Normally this is called from Level.java when a level has been completed.
+     * @param points the points, the current user receives.
+     */
     public void addPoints(long points) {
         this.currentHighScoreEntry.addPoints(points);
     }
 
+    /**
+     * Increases the levelNumber and starts the next level.
+     * @throws IOException
+     */
     public void nextLevel() {
         this.levelNumber++;
+
+        Game.logger.info("Starting level "+levelNumber); 
+
         Level l;
         try {
             l = this.createLevel(levelNumber);
             l.display();
+        } catch(IOException ioex) {
+            /* when level image can not be loaded */
+            JOptionPane.showMessageDialog(this, "Unable to start level." +ioex.getMessage());
+            System.exit(1);
         } catch (Exception e1) {
-            /* alle levels durch */
+            /* alle levels durch, spiel zurücksetzen */
+            Game.logger.info("All levels completed"); 
             this.gameOver();
         }
-
+        
         this.refreshHighScore();
     }
 
+    /**
+     * Resets the levelnumber back to 0.
+     */
     public void gameOver() {
+        Game.logger.info("Game over"); 
+
         this.levelNumber = 0;
         this.refreshHighScore();
     }
 
+    /**
+     * Updates the highscoreLabel text with the current highscore.
+     */
     private void refreshHighScore() {
         this.highscoreLabel.setText(highscore.getHtml());
         try {
             this.highscore.save();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Game.logger.error("Unable to save highscore to file.", e); 
+            JOptionPane.showMessageDialog(this, "Unable to save highscore to file. "+e.getMessage());
         }
     }   
 

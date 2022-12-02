@@ -1,13 +1,11 @@
 package at.ddb.teamwork;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -35,7 +33,8 @@ public class HighScore implements Serializable {
     }
 
     public String getHtml() {
-
+        /* sort highscore data decending by score. the sorting logic is defined 
+         * in HighScoreEntry.java method compareTo */
         Collections.sort(entries);
 
         String html = "<html><h1>Highscore</h1><table width=100% cellpadding='0' cellmargin='0'>";
@@ -53,23 +52,38 @@ public class HighScore implements Serializable {
     }
 
     public void save() throws IOException {
+        Game.logger.info("Saving highscore"); 
+
+        /* fileoutput stream pointing to hihghscore file */
         FileOutputStream fileStream = new FileOutputStream("highscore");
 
-        /* Serialize highscore from ArrayList */
+        /* Serialize highscore from ArrayList and pass into fileoutput stream */
         ObjectOutputStream os = new ObjectOutputStream(fileStream);
         os.writeObject(this.entries);
 
         /* close file output stream */
         fileStream.close();
         os.close();
+
+        Game.logger.info("Highscore saved"); 
         
     }
 
     public void load() throws ClassNotFoundException, IOException {
+        Game.logger.info("Load highscore from file"); 
+
+        /* fileinput stream with the highscore file as source */
         FileInputStream fileStream = new FileInputStream("highscore");
+
+        /* deserialize highscoredata into entries ArrayList */
         ObjectInputStream is = new ObjectInputStream(fileStream);
         this.entries = (ArrayList<HighScoreEntry>) is.readObject();
 
+        /* close file input stream */
+        fileStream.close();
+        is.close();
+
+        Game.logger.info("Highscore loaded from file"); 
     }
 }
 

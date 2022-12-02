@@ -11,6 +11,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -23,12 +24,28 @@ public class AudioController {
     private Clip gameOverClip;
 
     public AudioController() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+
+        /* necessary for initialization of javafx, 
+         * see: https://stackoverflow.com/questions/14025718/javafx-toolkit-not-initialized-when-trying-to-play-an-mp3-file-through-mediap  */
+        new JFXPanel();
+        
         this.coinCollectedClip = this.prepareAudioClip("sounds/collect.wav");
         this.levelCompleteClip = this.prepareAudioClip("sounds/levelup.wav");
         this.gameOverClip = this.prepareAudioClip("sounds/gameover.wav");
+
+        Game.logger.info("Audiocontroller initialized"); 
     }
 
 
+    
+    /** 
+     * Internally used to preload an prepare an audioclip given by a filepath.
+     * @param filePath the path to a .wav file
+     * @return Clip
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     private Clip prepareAudioClip(String filePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         // Create an AudioInputStream from a given sound file
         File audioFile = new File(filePath);
@@ -44,15 +61,24 @@ public class AudioController {
         // open audio stream
         audioClip.open(audioStream);
 
-        return audioClip;    }
+        return audioClip;    
+    }
 
+        
+    
+    /** 
+     * Loads an audiofile and immediatly starts playing. If another audiofile is already 
+     * beeing played, it is stopped and the new one will start.
+     * @param filePath The filesystem path to the music file
+     */
     public void playMusic(String filePath) {
+
+        Game.logger.info("Playing music: " + filePath); 
+
         if(this.mediaPlayer != null) {
             this.mediaPlayer.stop();
         }
         
-
-        final JFXPanel fxPanel = new JFXPanel();
         Media music = new Media(new File(filePath).toURI().toString());
         this.mediaPlayer = new MediaPlayer(music);
         this.mediaPlayer.setCycleCount(Integer.MAX_VALUE);
@@ -60,10 +86,17 @@ public class AudioController {
         this.mediaPlayer.setVolume(0.3);
     }
 
+    /**
+     * Stops the currently playing music if any.
+     */
     public void stopMusic() {
+        Game.logger.info("Stopping music"); 
         this.mediaPlayer.stop();
     }
 
+    /**
+     * Immediately plays a soudclip describing a coin that is collected.
+     */
     public void playCoinCollected() {
         this.coinCollectedClip.stop(); // falls der clip schon läuft, stoppen
         this.coinCollectedClip.setFramePosition(0); // falls der clip schon einmal lieft, an den anfang zurücksetzen
@@ -71,6 +104,9 @@ public class AudioController {
         
     }
 
+    /**
+     * Immediately plays a soudclip describing that a level has successfully completed.
+     */
     public void playLevelComplete() {
         this.levelCompleteClip.stop(); // falls der clip schon läuft, stoppen
         this.levelCompleteClip.setFramePosition(0); // falls der clip schon einmal lieft, an den anfang zurücksetzen
@@ -78,6 +114,9 @@ public class AudioController {
         
     }
 
+    /**
+     * Immediately plays a soudclip describing that the game is over.
+     */
     public void playGameOver() {
         this.gameOverClip.stop(); // falls der clip schon läuft, stoppen
         this.gameOverClip.setFramePosition(0); // falls der clip schon einmal lieft, an den anfang zurücksetzen
