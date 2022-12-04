@@ -1,5 +1,15 @@
 package at.ddb.teamwork;
 
+    import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Robot;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -7,26 +17,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
-
-
-
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.Robot;
-import java.awt.Font;
-import java.awt.event.*;
-import java.awt.Image;
-import java.awt.Cursor;
 
 public class Level extends JFrame {
 
@@ -51,20 +47,20 @@ public class Level extends JFrame {
         super("Level " + number);
 
         Game.logger.info("Initializing level " + number); 
-/** Hier beginnt die Initialisierung von diversen Variablen um Sie im Anschluss verwenden zu können */
+        /** Hier beginnt die Initialisierung von diversen Variablen um Sie im Anschluss verwenden zu können */
         this.game = game;
         this.imagePath = imagePath;
         this.timeoutSeconds = timeoutSeconds;
-/** Variable "elements" wird initialisiert und die später unsere Obstacles übergeben zu können */
+        /** Variable "elements" wird initialisiert und die später unsere Obstacles übergeben zu können */
         this.elements = new ArrayList<GameElement>();
-/** Variable "game.Started" wird später auf true gesetzt ab dann wird Mauszeiger Position gemessen */
+        /** Variable "game.Started" wird später auf true gesetzt ab dann wird Mauszeiger Position gemessen */
         this.gameStarted = false;
 
         /* set mouse cursor to CROSSHAIR */
         this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 
     }
-/** Hier werden bei jedem Aufruf Obstacles gesammelt und in unserer ArrayList gespeichert */
+    /** Hier werden bei jedem Aufruf Obstacles gesammelt und in unserer ArrayList gespeichert */
     public void addElement(GameElement e) {
         this.elements.add(e);
     }
@@ -152,9 +148,9 @@ public class Level extends JFrame {
         /** Hier wird dem Frame der Hintergrund zugewiesen */
         this.setContentPane(bgImageLabel);
 
-/** Hier wird der Username von game abgefragt und in ein Label gesetzt
- *  Kästchen rechts im Spielbildschirm
- */
+        /** Hier wird der Username von game abgefragt und in ein Label gesetzt
+         *  Kästchen rechts im Spielbildschirm
+        */
         // Username Label
         userNameLabel = new JLabel(this.game.getUserName());
         userNameLabel.setLocation(1200, 50);

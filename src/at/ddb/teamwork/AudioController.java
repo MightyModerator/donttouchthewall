@@ -124,4 +124,61 @@ public class AudioController {
     }
     
     
+
+    /**
+     * @return MediaPlayer return the mediaPlayer
+     */
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+
+    /**
+     * @param mediaPlayer the mediaPlayer to set
+     */
+    public void setMediaPlayer(MediaPlayer mediaPlayer) {
+        this.mediaPlayer = mediaPlayer;
+    }
+
+    /**
+     * @return Clip return the coinCollectedClip
+     */
+    public Clip getCoinCollectedClip() {
+        return coinCollectedClip;
+    }
+
+    /**
+     * @param coinCollectedClip the coinCollectedClip to set
+     */
+    public void setCoinCollectedClip(Clip coinCollectedClip) {
+        this.coinCollectedClip = coinCollectedClip;
+    }
+
+    /**
+     * @return Clip return the levelCompleteClip
+     */
+    public Clip getLevelCompleteClip() {
+        return levelCompleteClip;
+    }
+
+    /**
+     * @param levelCompleteClip the levelCompleteClip to set
+     */
+    public void setLevelCompleteClip(Clip levelCompleteClip) {
+        this.levelCompleteClip = levelCompleteClip;
+    }
+
+    /**
+     * @return Clip return the gameOverClip
+     */
+    public Clip getGameOverClip() {
+        return gameOverClip;
+    }
+
+    /**
+     * @param gameOverClip the gameOverClip to set
+     */
+    public void setGameOverClip(Clip gameOverClip) {
+        this.gameOverClip = gameOverClip;
+    }
+
 }
