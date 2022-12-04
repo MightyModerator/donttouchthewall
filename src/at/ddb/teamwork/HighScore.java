@@ -51,6 +51,9 @@ public class HighScore implements Serializable {
         return html;
     }
 
+    /**
+     * @throws IOException
+     */
     public void save() throws IOException {
         Game.logger.info("Saving highscore"); 
 
