@@ -20,11 +20,13 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
-import javax.xml.catalog.Catalog;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Main game controller class, here all parts come together.
+ */
 public class Game extends JFrame {
 
     private JPanel highscorePanel;
@@ -162,16 +164,42 @@ public class Game extends JFrame {
 
         switch(levelNumber) {
             case 1:
-                lv = new Level(this, 1, "assets/Levels/level1.png", 60);
+                lv = new Level(this, 1, "assets/Levels/LevelDesert.png", 30);
+                lv.addElement(new Obstacle1(1392, 546, true, 2));
+                lv.addElement(new Obstacle1(765, 355, false, 3));
+                lv.addElement(new Obstacle1(198, 190, true, 4));
+                lv.addElement(new Obstacle2(778, 355, 3000));
+                lv.addElement(new Obstacle2(766, 443, 3000));
+                break;
+            case 2:
+                lv = new Level(this, 1, "assets/Levels/LevelFire.png", 40);
+                lv.addElement(new Obstacle1(152, 142, true, 3));
+                lv.addElement(new Obstacle1(768, 279, false, 4));
+                lv.addElement(new Obstacle1(1274, 547, true, 5));
+                lv.addElement(new Obstacle2(217, 382, 1500));
+                lv.addElement(new Obstacle2(553, 382, 1000));
+                lv.addElement(new Obstacle2(1078, 382, 2000));
+                lv.addElement(new Obstacle2(1434, 382, 1200));
+                break;
+            case 3:
+                lv = new Level(this, 1, "assets/Levels/LevelMaze.png", 50);
+                lv.addElement(new Obstacle1(100, 100, true, 8));
+                lv.addElement(new Obstacle1(1500, 300, false, 3));
+                lv.addElement(new Obstacle1(700, 600, true, 6));
+                lv.addElement(new Obstacle1(500, 450, false, 2));
+                lv.addElement(new Obstacle1(732, 234, true, 1));
+                lv.addElement(new Obstacle1(900, 650, true, 3));
+                lv.addElement(new Obstacle2(800, 450, 2800));
+                lv.addElement(new Obstacle2(599, 344, 1000));
+                break;
+            case 4:
+                lv = new Level(this, 1, "assets/Levels/LevelEarth.png", 60);
                 lv.addElement(new Obstacle1(100, 100, true, 1));
                 lv.addElement(new Obstacle1(1500, 300, false, 2));
                 lv.addElement(new Obstacle1(700, 600, true, 3));
                 lv.addElement(new Obstacle1(500, 450, false, 2));
                 lv.addElement(new Obstacle1(900, 650, true, 3));
-                lv.addElement(new Obstacle2(800, 450, 38, 52));
-                break;
-            case 2:
-                System.out.println("Level 2 wird starten.");
+                lv.addElement(new Obstacle2(800, 450, 3000));
                 break;
         }
 
@@ -191,8 +219,8 @@ public class Game extends JFrame {
     }
 
     /**
-     * returns the audio controller. This may be called from insed the levels or the gameelements.
-     * @return 
+     * This may be called from insed the levels or the gameelements.
+     * @return  returns the audio controller.
      */
     public AudioController getAudioController() {
         return this.audioController;
@@ -208,7 +236,6 @@ public class Game extends JFrame {
 
     /**
      * Increases the levelNumber and starts the next level.
-     * @throws IOException
      */
     public void nextLevel() {
         this.levelNumber++;
@@ -233,6 +260,7 @@ public class Game extends JFrame {
     }
 
     /**
+     * Called from Level.java to tell the game controller that the game is over.
      * Resets the levelnumber back to 0.
      */
     public void gameOver() {

@@ -40,7 +40,7 @@ public class Level extends JFrame {
     protected JLabel timerLabel;
     protected JLabel userNameLabel;
     protected List<GameElement> elements;
-    
+    protected Timer gameElementsTimer;
 
     
     public Level(Game game, int number, String imagePath, int timeoutSeconds) {
@@ -60,13 +60,16 @@ public class Level extends JFrame {
         this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 
     }
-    /** Hier werden bei jedem Aufruf Obstacles gesammelt und in unserer ArrayList gespeichert */
+    /**
+     * Hier werden bei jedem Aufruf Obstacles gesammelt und in unserer ArrayList gespeichert 
+     * @param e das GameElement welches im Level plaziert werden soll
+     */
     public void addElement(GameElement e) {
         this.elements.add(e);
     }
 
     /**
-     * @d
+     * 
      * @throws IOException when background image cannot be loaded
      */
     public void display() throws IOException {
@@ -110,6 +113,7 @@ public class Level extends JFrame {
         this.gameStarted = true;
         this.startCounter();
         this.startGameElements();
+        this.game.getAudioController().playMusic("assets/THE_HARA_Fire.mp3");
 
         Game.logger.info("Game started"); 
     }
@@ -117,6 +121,7 @@ public class Level extends JFrame {
     public void stop() {
         this.gameStarted = false;
         this.stopGameElements();
+        this.game.getAudioController().stopMusic();
 
         Game.logger.info("Game stopped"); 
     }
@@ -125,7 +130,7 @@ public class Level extends JFrame {
      * @throws IOException
      */
     protected void  initScreen() throws IOException  {
-        /** Hier wird zuerst der Levelmanager deaktiviert da wir über Koordinaten arbeiten */
+        /** Hier wird zuerst der Layoutmanager deaktiviert da wir über Koordinaten arbeiten */
         this.setLayout(null);
         /** Hier defineren wir das Programm Fenster mit 1600 x 900 Pixel */
         this.setSize(1600, 900);
@@ -250,8 +255,6 @@ public class Level extends JFrame {
         this.stop();
         System.out.println("Finish!");
 
-        
-
         JOptionPane.showMessageDialog(this, "You did it!!!");
 
         this.setVisible(false); // hide level frame
@@ -267,11 +270,6 @@ public class Level extends JFrame {
         // hide username, timer and game elements
         this.userNameLabel.setVisible(false);
         this.timerLabel.setVisible(false);
-
-        /* hide all obstacles by iterating */
-        for (GameElement e : elements) {
-            e.setVisible(false);
-        }  
 
         /* load game over animation */
         ImageIcon im = new ImageIcon("assets/burn.gif");
@@ -313,10 +311,19 @@ public class Level extends JFrame {
 
     }
 
-    Timer gameElementsTimer;
+    
     private void startGameElements() {
-        gameElementsTimer = new Timer(40, new ActionListener() {
 
+        /* show and start all obstacles by iterating */
+        for (GameElement el : elements) {
+            el.setVisible(true); 
+            el.start(); 
+        }   
+
+        /*
+         * call the .draw() method of each game element, 25 times a second (40ms) 
+         */
+        gameElementsTimer = new Timer(40, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (GameElement el : elements) {
@@ -330,6 +337,13 @@ public class Level extends JFrame {
     }
 
     private void stopGameElements() {
+        /* hide and stop all obstacles by iterating */
+        for (GameElement el : elements) {
+            el.setVisible(false); 
+            el.stop();
+        }   
+
+        // stop timer that frequently calls draw() on each game element
         this.gameElementsTimer.stop();
     }
 

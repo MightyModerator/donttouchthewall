@@ -15,6 +15,9 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
+/**
+ * Central controller class for all audio operations in the game.
+ */
 public class AudioController {
 
     private MediaPlayer mediaPlayer;
@@ -82,7 +85,7 @@ public class AudioController {
         this.mediaPlayer = new MediaPlayer(music);
         this.mediaPlayer.setCycleCount(Integer.MAX_VALUE);
         this.mediaPlayer.play();
-        this.mediaPlayer.setVolume(0.3);
+        this.mediaPlayer.setVolume(0.1);
     }
 
     /**

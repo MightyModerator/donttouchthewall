@@ -9,6 +9,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
+
+/**
+ * Represents the hiscore, has capability to save to and load from file.
+ */
 public class HighScore implements Serializable {
 
     private ArrayList<HighScoreEntry> entries = new ArrayList<HighScoreEntry>();
@@ -32,6 +36,10 @@ public class HighScore implements Serializable {
         return e;
     }
 
+    /**
+     * Creates a html represenation of the highscore.
+     * @return a String representing the highscore as html
+     */
     public String getHtml() {
         /* sort highscore data decending by score. the sorting logic is defined 
          * in HighScoreEntry.java method compareTo */
@@ -52,7 +60,8 @@ public class HighScore implements Serializable {
     }
 
     /**
-     * @throws IOException
+     * Saves the current highscore to the file "highscore"
+     * @throws IOException When any file IO error happens, e.g. the file is locked
      */
     public void save() throws IOException {
         Game.logger.info("Saving highscore"); 
@@ -72,6 +81,11 @@ public class HighScore implements Serializable {
         
     }
 
+    /**
+     * Loads the highscore entries from the file "highscore"
+     * @throws ClassNotFoundException When highscore file is broken
+     * @throws IOException When any file IO error happens, e.g. the file is locked
+     */
     public void load() throws ClassNotFoundException, IOException {
         Game.logger.info("Load highscore from file"); 
 

@@ -45,5 +45,15 @@ public abstract class GameElement extends JLabel {
      */
     public abstract void draw();
 
+    /**
+     * This method is called when the gameplay is started.
+     */
+    public abstract void start();
+
+    /** 
+     * This mehtod is called when the gameplay is stopped. 
+     */
+    public abstract void stop();
+
     
 }

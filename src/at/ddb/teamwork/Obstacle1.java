@@ -36,5 +36,16 @@ public class Obstacle1 extends GameElement {
         this.setLocation(p);
         
     }
+
+    @Override
+    public void start() {
+        // nothing to do        
+    }
+
+    @Override
+    public void stop() {
+        // nothing to do
+        
+    }
     
 }
