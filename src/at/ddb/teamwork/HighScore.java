@@ -1,6 +1,7 @@
 package at.ddb.teamwork;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -94,6 +95,7 @@ public class HighScore implements Serializable {
         Game.logger.info("Load highscore from file"); 
 
         try{
+            
             /* fileinput stream with the highscore file as source */
             FileInputStream fileStream = new FileInputStream("highscore");
 
@@ -104,6 +106,8 @@ public class HighScore implements Serializable {
             /* close file input stream */
             fileStream.close();
             is.close();
+        } catch(FileNotFoundException fnfex) {
+            /* do nothing, file has not been created */
         } catch(Exception ex) {
             throw new HighScoreException("Error loading highscore. " + ex.getMessage(), ex);
         }
