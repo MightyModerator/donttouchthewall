@@ -21,7 +21,7 @@ public class HighScore implements Serializable {
      * Adds an new entry to the highscore
      * @param username the users name for the highscore
      * @param score the users highscore
-     * @return returns a new 
+     * @return returns a new HighscoreEntry
      */
     public HighScoreEntry add(String username, int score) {
         

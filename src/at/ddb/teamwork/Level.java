@@ -99,7 +99,7 @@ public class Level extends JFrame {
 
             /**
              * Invoked when the mouse button has been moved on a component
-             * (with no buttons no down).
+             * (with no buttons pressed).
              */
             @Override
             public void mouseMoved(MouseEvent e) {
