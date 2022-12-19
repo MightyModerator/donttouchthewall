@@ -277,7 +277,7 @@ public class Game extends JFrame {
         this.highscoreLabel.setText(highscore.getHtml());
         try {
             this.highscore.save();
-        } catch (IOException e) {
+        } catch (HighScoreException e) {
             Game.logger.error("Unable to save highscore to file.", e); 
             JOptionPane.showMessageDialog(this, "Unable to save highscore to file. "+e.getMessage());
         }

@@ -6,6 +6,7 @@ import java.util.Random;
 import org.testng.annotations.Test;
 
 import at.ddb.teamwork.HighScore;
+import at.ddb.teamwork.HighScoreException;
 
 public class AppTest {
 
@@ -21,7 +22,7 @@ public class AppTest {
         h.add("testuser3", 55);
         h.add("testuser4", 6);
 
-        String expectedHTML = "<html><h1>Highscore</h1><table width=100% cellpadding='0' cellmargin='0'><tr color='#FFFFFF'><td width='50px'>#1</td><td width='235px'>testuser1</td><td align='right'>333333 credits</td></tr><tr color='#FFFFFF'><td width='50px'>#2</td><td width='235px'>testuser2</td><td align='right'>4444 credits</td></tr><tr color='#FFFFFF'><td width='50px'>#3</td><td width='235px'>testuser3</td><td align='right'>55 credits</td></tr><tr color='#FF0000'><td width='50px'>#4</td><td width='235px'>testuser4</td><td align='right'>6 credits</td></tr></table></html>";
+        String expectedHTML = "<html><h1>Highscore</h1><table width='100%' cellpadding='0' cellmargin='0'><tr color='#FFFFFF'><td width='50px'>#1</td><td width='235px'>testuser1</td><td align='right'>333333 credits</td></tr><tr color='#FFFFFF'><td width='50px'>#2</td><td width='235px'>testuser2</td><td align='right'>4444 credits</td></tr><tr color='#FFFFFF'><td width='50px'>#3</td><td width='235px'>testuser3</td><td align='right'>55 credits</td></tr><tr color='#FF0000'><td width='50px'>#4</td><td width='235px'>testuser4</td><td align='right'>6 credits</td></tr></table></html>";
         assertEquals(expectedHTML, h.getHtml());
     }
 
@@ -31,7 +32,7 @@ public class AppTest {
      * @throws ClassNotFoundException
      */
     @Test
-    public void testHighscoreSave() throws IOException, ClassNotFoundException {
+    public void testHighscoreSave() throws HighScoreException {
 
         /* Rename current highscore file if it exists to a temp filename, and later rename it back */
         File currentFile = new File("highscore");
